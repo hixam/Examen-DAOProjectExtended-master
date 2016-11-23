@@ -27,3 +27,5 @@ public class etakemons extends DAO {
 public etakemons(){}
     private String name;
 }
+
+

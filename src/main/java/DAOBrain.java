@@ -40,9 +40,9 @@ public class DAOBrain {
         return query.toString();
     }
 
-    public String getSelectQuery() {
+    public String getSelectQuery(Object object) {
         StringBuilder query = new StringBuilder("SELECT * FROM ");
-        query.append(this.getClass().getSimpleName());
+        query.append(object.getClass().getSimpleName());
         query.append(" WHERE id=?");
         return query.toString();
     }
@@ -109,6 +109,12 @@ public class DAOBrain {
         return capitalizedFieldName;
     }
 
+    public String getSelectAllQuery(Class classToLoad) {
+        StringBuilder query = new StringBuilder("SELECT * FROM ");
+        query.append(classToLoad.getSimpleName());
+        return query.toString();
+    }
+
     private void addFieldsAndInterrogantsUpdateQuery(StringBuffer query) {
         for(Field f : this.getClass().getDeclaredFields()) {
             query.append(f.getName());
@@ -160,7 +166,7 @@ public class DAOBrain {
         }
     }
 
-    public void setFieldsFromResultSet(ResultSet resultSet, ResultSetMetaData resultSetMetaData) {
+    public void setFieldsFromResultSet(ResultSet resultSet, ResultSetMetaData resultSetMetaData, Object _objeto) {
         try {
             for(int i=1; i <= resultSetMetaData.getColumnCount(); i++) {
                 String columnType = resultSetMetaData.getColumnTypeName(i);
@@ -168,14 +174,54 @@ public class DAOBrain {
                 switch(columnType) {
                     case "VARCHAR":
                         String resultString = resultSet.getString(i);
-                        setStringField(resultString, columnName);
+                        setStringField(resultString, columnName, _objeto);
                         break;
                     case "INT":
                         int resultInt = resultSet.getInt(i);
-                        setIntField(resultInt, columnName);
+                        setIntField(resultInt, columnName, _objeto);
+                        break;
+                    case "BIT":
+                        boolean resultBoolean = resultSet.getBoolean(i);
+                        setBooleanField(resultBoolean, columnName, _objeto);
+                        break;
+                    default:
+                        break;
                 }
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private void setStringField(String resultString, String name, Object object) {
+        Method method;
+        try {
+            method = object.getClass().getMethod(getSetterName(name), resultString.getClass());
+            method.invoke(object, resultString);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setIntField(int resultId, String name, Object object) {
+        Method method;
+        try {
+            Class[] arguments = new Class[1];
+            arguments[0] = int.class;
+            method = object.getClass().getMethod(getSetterName(name), arguments);
+            method.invoke(object, resultId);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setBooleanField(boolean resultBoolean, String name, Object object) {
+        Method method;
+        try {
+            Class[] arguments = new Class[1];
+            arguments[0] = boolean.class;
+            method = object.getClass().getMethod(getSetterName(name), arguments);
+            method.invoke(object, resultBoolean);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }

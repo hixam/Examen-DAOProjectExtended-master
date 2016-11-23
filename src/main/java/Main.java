@@ -37,21 +37,21 @@ public class Main {
         List<etakemons> etak = new ArrayList<etakemons>();
         etakemons mietak = new etakemons();
 
-        Fachada.getInstance().getCommand("User").User("1","usuario1","apellido1");
-        Fachada.getInstance().getCommand("User").User("2","usuario2","apellido1");
-        Fachada.getInstance().getCommand("User").User("3","usuario3","apellido1");
-        Fachada.getInstance().getCommand("User").User("4","usuario4","apellido1");
-        Fachada.getInstance().getCommand("User").User("5","usuario5","apellido1");
+        Fachada.getInstance().getCommand("User").AddUser("usuario1","pass");
+        Fachada.getInstance().getCommand("User").AddUser( "usuario2","pass");
+        Fachada.getInstance().getCommand("User").AddUser("usuario3","pass");
+        Fachada.getInstance().getCommand("User").AddUser("usuario4","pass");
+        Fachada.getInstance().getCommand("User").AddUser("usuario5","pass");
 
-        ListUsers.put("1", usr.insertUserToList("1","hicham","az"));
-        ListUsers.put("2", usr.insertUserToList("2","asddsa","az"));
+        ListUsers.put("1", usr.insertUserToList("hicham","az"));
+        ListUsers.put("2", usr.insertUserToList("asddsa","az"));
         mietak.setId(1); mietak.setName("testname");
         etak.add(mietak);
         mietak.setId(2); mietak.setName("testname2");
         etak.add(mietak);
 
 
-        ListUsers.forEach((k,v) -> v.insert() );
+        ListUsers.forEach((k,v) -> v.insert(k) );
 
 
 

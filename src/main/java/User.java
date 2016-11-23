@@ -45,6 +45,32 @@ public class User extends DAO {
     String id;
     String name;
     String apellido;
+
+    public List<etakemons> getEtakemonList() {
+        return etakemonList;
+    }
+
+    public void setEtakemonList(List<etakemons> etakemonList) {
+        this.etakemonList = etakemonList;
+    }
+
+    public List<etakemons> etakemonList = new ArrayList<>();
+
+    public User(String name, String password) {
+        this.name = name;
+        this.password = password;
+    }
+
+    String password;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
   //  public List<User> milistaUsers = new ArrayList<User>();
     public HashMap<String, User> ListUsers = new HashMap();
 
@@ -72,19 +98,13 @@ public class User extends DAO {
         this.apellido = apellido;
     }
 
-    public User(String id, String name, String apellido) {
-        this.id = id;
-        this.name = name;
-        this.apellido = apellido;
-     //   this.insertUserToList(id,name,apellido);
 
-    }
 
     public User() {
     }
-    public User insertUserToList(String _id, String _name, String _apellido)
+    public User insertUserToList( String _name, String _pass)
     {
-        User usuario = new User(_id,_name,_apellido);
+        User usuario = new User(_name,_pass);
       //  ListUsers.put(usuario.id, usuario);
         return usuario;
     }

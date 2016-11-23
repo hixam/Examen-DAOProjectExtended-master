@@ -1,9 +1,12 @@
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 abstract class DAO extends DAOBrain {
 
-    void insert() {
+
+    void insert(Object _objecto) {
         String query = getInsertQuery();
         System.out.println(query);
         Connection con = getConnection();
@@ -22,27 +25,52 @@ abstract class DAO extends DAOBrain {
         }
     }
 
-    void select(int primaryKey) {
-        String query = getSelectQuery();
-        System.out.println(query);
+    public Object select(Class _classToLoad, int _PKey) {
+        Object newObject = null;
+        try {
+            newObject = _classToLoad.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        String query = getSelectQuery(newObject);
         Connection con = getConnection();
         try {
             PreparedStatement preparedStatement = con.prepareStatement(query);
             int position = 1;
-            addPrimaryKeyParameter(preparedStatement, position, primaryKey);
+            addPrimaryKeyParameter(preparedStatement, position, _PKey);
             ResultSet resultSet = preparedStatement.executeQuery();
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             while (resultSet.next()) {
-                setFieldsFromResultSet(resultSet, resultSetMetaData);
+                setFieldsFromResultSet(resultSet, resultSetMetaData, newObject);
             }
             preparedStatement.close();
             con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return newObject;
     }
-
-    void update() {
+    public List selectAll(Class classToLoad) {
+        List<Object> objects = new ArrayList<>();
+        String query = getSelectAllQuery(classToLoad);
+        Connection con = getConnection();
+        try {
+            PreparedStatement preparedStatement = con.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+            while (resultSet.next()) {
+                Object newObject = classToLoad.newInstance();
+                setFieldsFromResultSet(resultSet, resultSetMetaData, newObject);
+                objects.add(newObject);
+            }
+            preparedStatement.close();
+            con.close();
+        } catch (SQLException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return objects;
+    }
+    void update(Object _objecto) {
         String query = getUpdateQuery();
         System.out.println(query);
         Connection con = getConnection();
@@ -60,7 +88,7 @@ abstract class DAO extends DAOBrain {
         }
     }
 
-    void delete() {
+    void delete(Object _objecto) {
         String query = getDeleteQuery();
         System.out.println(query);
         Connection con = getConnection();
